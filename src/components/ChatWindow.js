@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./ChatWindow.css";
 import { getAIMessage } from "../api/api";
 import { marked } from "marked";
+import { set } from "date-fns";
 
 function ChatWindow() {
 
@@ -23,16 +24,28 @@ function ChatWindow() {
       scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (input) => {
-    if (input.trim() !== "") {
-      // Set user message
-      setMessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
-      setInput("");
-
-      // Call API & set assistant message
-      const newMessage = await getAIMessage(input);
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+  const handleSend = async () => {
+    if (typeof input !== 'string') {
+      console.error('Input is not a string');
+      return;
     }
+
+    const trimmedInput = input.trim();
+    if (trimmedInput === 0){
+      console.error('Input is empty after trimming');
+      return;
+    }
+
+    // Set user message
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {role: "user", content: trimmedInput},
+    ]);
+    setInput("");
+
+    // Call API & set assistant message
+    const newMessage = await getAIMessage(trimmedInput);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
   return (
@@ -48,21 +61,24 @@ function ChatWindow() {
           ))}
           <div ref={messagesEndRef} />
           <div className="input-area">
+
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  handleSend(input);
+                  handleSend();
                   e.preventDefault();
                 }
               }}
               rows="3"
             />
+
             <button className="send-button" onClick={handleSend}>
               Send
             </button>
+
           </div>
       </div>
 );
