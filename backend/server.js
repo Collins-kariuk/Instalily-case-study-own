@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 app.post('/query', (req, res) => {
     const userQuery = req.body.query;
     
-    // Process the user query (this is where your business logic goes)
+    // Process the user query
     let message = 'Default response';
   
     if (userQuery.includes('install part number PS11752778')) {
@@ -26,7 +26,7 @@ app.post('/query', (req, res) => {
     } else {
       message = 'I am not sure how to help with that. Please provide more details or try a different query.';
     }
-    
+    console.log('Received query: ${userQuery}, Responding with message: ${message}');
     res.json({ message });
   });
 
