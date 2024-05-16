@@ -52,7 +52,9 @@ async function scrapePartDetails(partUrl) {
     console.log(partDetails);
 
     // Store the scraped data in a JSON file named after the part number
+    const filePath = `part_${partNumber}.json`;
     fs.writeFileSync(`part_${partNumber}.json`, JSON.stringify(partDetails, null, 2));
+    console.log(`File saved: ${filePath}`)
   } catch (error) {
     // Log an error message if the scraping process fails
     console.error(`Error scraping part details: ${error.message}`);
