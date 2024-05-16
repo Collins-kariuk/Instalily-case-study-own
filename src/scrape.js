@@ -1,24 +1,28 @@
 // Import the axios library for making HTTP requests
 const axios = require('axios');
-
 // Import the cheerio library for parsing and manipulating HTML
 const cheerio = require('cheerio');
-
 // Import the fs (file system) module for reading and writing files
 const fs = require('fs');
 
-// Define the base URL of the website to be scraped
-const url = 'https://www.partselect.com/';
+// Define the base URLs for the fridge and dishwasher product catalogs
+const baseUrls = {
+  fridge: 'https://www.partselect.com/Fridge-Parts.htm',
+  dishwasher: 'https://www.partselect.com/Dishwasher-Parts.htm'
+};
 
-// Asynchronous function to scrape part details based on the part number
-async function scrapePartDetails(partNumber) {
+// Asynchronous function to scrape part details based on the part URL
+async function scrapePartDetails(partUrl) {
   try {
     // Make a GET request to fetch the HTML content of the part's page
-    const response = await axios.get(`${url}${partNumber}`);
+    const response = await axios.get(partUrl);
     
     // Load the HTML content into cheerio for parsing
     const html = response.data;
     const $ = cheerio.load(html);
+
+    // Extract the part number from the URL or page content
+    const partNumber = partUrl.split('/').pop().split('.')[0];
 
     // Extract the part name from the HTML
     const partName = $('h1.part-title').text().trim();
@@ -55,5 +59,34 @@ async function scrapePartDetails(partNumber) {
   }
 }
 
-// Call the function to scrape details for a specific part number (example part number 'PS11752778')
-scrapePartDetails('PS11752778');
+// Asynchronous function to scrape all parts from a catalog page
+async function scrapeCatalog(catalogUrl) {
+  try {
+    // Make a GET request to fetch the HTML content of the catalog page
+    const response = await axios.get(catalogUrl);
+
+    // Load the HTML content into cheerio for parsing
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    // Find all part links on the catalog page
+    const partLinks = [];
+    $('a.part-link').each((index, element) => {
+      partLinks.push($(element).attr('href'));
+    });
+
+    // Scrape details for each part
+    for (const partLink of partLinks) {
+      await scrapePartDetails(partLink);
+    }
+  } catch (error) {
+    // Log an error message if the scraping process fails
+    console.error(`Error scraping catalog: ${error.message}`);
+  }
+}
+
+// Scrape both fridge and dishwasher catalogs
+(async () => {
+  await scrapeCatalog(baseUrls.fridge);
+  await scrapeCatalog(baseUrls.dishwasher);
+})();
