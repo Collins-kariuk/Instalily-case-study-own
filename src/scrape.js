@@ -22,7 +22,7 @@ async function scrapePartDetails(partUrl) {
     const $ = cheerio.load(html);
 
     // Extract the part number from the URL or page content
-    const partNumber = partUrl.split('/').pop().split('.')[0];
+    const partNumber = partUrl.split('-')[1];
 
     // Extract the part name from the HTML
     const partName = $('h1.part-title').text().trim();
@@ -53,8 +53,8 @@ async function scrapePartDetails(partUrl) {
 
     // Store the scraped data in a JSON file named after the part number
     const filePath = `part_${partNumber}.json`;
-    fs.writeFileSync(`part_${partNumber}.json`, JSON.stringify(partDetails, null, 2));
-    console.log(`File saved: ${filePath}`)
+    fs.writeFileSync(filePath, JSON.stringify(partDetails, null, 2));
+    console.log(`File saved: ${filePath}`);
   } catch (error) {
     // Log an error message if the scraping process fails
     console.error(`Error scraping part details: ${error.message}`);
@@ -73,8 +73,11 @@ async function scrapeCatalog(catalogUrl) {
 
     // Find all part links on the catalog page
     const partLinks = [];
-    $('a.part-link').each((index, element) => {
-      partLinks.push($(element).attr('href'));
+    $('a.part-title-link').each((index, element) => {
+      const partLink = $(element).attr('href');
+      if (partLink) {
+        partLinks.push(`https://www.partselect.com${partLink}`);
+      }
     });
 
     // Scrape details for each part
