@@ -14,6 +14,7 @@ const baseUrls = {
 // Asynchronous function to scrape part details based on the part URL
 async function scrapePartDetails(partUrl) {
   try {
+    console.log(`Scraping part details from: ${partUrl}`);
     // Make a GET request to fetch the HTML content of the part's page
     const response = await axios.get(partUrl);
     
@@ -22,7 +23,7 @@ async function scrapePartDetails(partUrl) {
     const $ = cheerio.load(html);
 
     // Extract the part number from the URL or page content
-    const partNumber = partUrl.split('-')[1];
+    const partNumber = partUrl.split('-')[1] || 'unknown';
 
     // Extract the part name from the HTML
     const partName = $('h1.part-title').text().trim();
@@ -64,6 +65,7 @@ async function scrapePartDetails(partUrl) {
 // Asynchronous function to scrape all parts from a catalog page
 async function scrapeCatalog(catalogUrl) {
   try {
+    console.log(`Scraping catalog from: ${catalogUrl}`);
     // Make a GET request to fetch the HTML content of the catalog page
     const response = await axios.get(catalogUrl);
 
@@ -79,6 +81,8 @@ async function scrapeCatalog(catalogUrl) {
         partLinks.push(`https://www.partselect.com${partLink}`);
       }
     });
+
+    console.log(`Found ${partLinks.length} part links`);
 
     // Scrape details for each part
     for (const partLink of partLinks) {
