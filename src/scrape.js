@@ -1,8 +1,5 @@
-// Import the axios library for making HTTP requests
 const axios = require('axios');
-// Import the cheerio library for parsing and manipulating HTML
 const cheerio = require('cheerio');
-// Import the fs (file system) module for reading and writing files
 const fs = require('fs');
 
 // Define the base URLs for the fridge and dishwasher product catalogs
@@ -23,7 +20,7 @@ async function scrapePartDetails(partUrl) {
     const $ = cheerio.load(html);
 
     // Extract the part number from the URL or page content
-    const partNumber = partUrl.split('-')[1] || 'unknown';
+    const partNumber = partUrl.split('-')[1];
 
     // Extract the part name from the HTML
     const partName = $('h1.part-title').text().trim();
@@ -75,7 +72,7 @@ async function scrapeCatalog(catalogUrl) {
 
     // Find all part links on the catalog page
     const partLinks = [];
-    $('a.part-title-link').each((index, element) => {
+    $('a.part-title').each((index, element) => {
       const partLink = $(element).attr('href');
       if (partLink) {
         partLinks.push(`https://www.partselect.com${partLink}`);
