@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 const app = express();
 const port = 5001;
 
@@ -8,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Load the scraped data
-const partsData = JSON.parse(fs.readFileSync('scrapedPartsData.json', 'utf8'));
+const partsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'scrapedPartsData.json'), 'utf8'));
 
 app.get('/', (req, res) => {
     res.send('Backend is running');
@@ -41,5 +42,5 @@ app.post('/query', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on <http://localhost>:${port}`);
+    console.log(`Server is running on http://localhost:${port}`);
 });

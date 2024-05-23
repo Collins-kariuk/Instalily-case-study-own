@@ -1,12 +1,16 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const path = require('path');
 
 // Define the base URLs for the fridge and dishwasher product catalogs
 const baseUrls = {
   fridge: 'https://www.partselect.com/Fridge-Parts.htm',
   dishwasher: 'https://www.partselect.com/Dishwasher-Parts.htm'
 };
+
+// Object to store all scraped part details
+const allPartsData = {};
 
 // Asynchronous function to scrape part details based on the part URL
 async function scrapePartDetails(partUrl) {
@@ -49,10 +53,8 @@ async function scrapePartDetails(partUrl) {
     // Log the scraped part details to the console
     console.log(partDetails);
 
-    // Store the scraped data in a JSON file named after the part number
-    const filePath = `part_${partNumber}.json`;
-    fs.writeFileSync(filePath, JSON.stringify(partDetails, null, 2));
-    console.log(`File saved: ${filePath}`);
+    // Add the part details to the allPartsData object
+    allPartsData[partNumber] = partDetails;
   } catch (error) {
     // Log an error message if the scraping process fails
     console.error(`Error scraping part details: ${error.message}`);
@@ -95,4 +97,9 @@ async function scrapeCatalog(catalogUrl) {
 (async () => {
   await scrapeCatalog(baseUrls.fridge);
   await scrapeCatalog(baseUrls.dishwasher);
+
+  // Write all scraped data to a single JSON file
+  const filePath = path.join(__dirname, 'scrapedPartsData.json');
+  fs.writeFileSync(filePath, JSON.stringify(allPartsData, null, 2));
+  console.log(`All part details saved to: ${filePath}`);
 })();
