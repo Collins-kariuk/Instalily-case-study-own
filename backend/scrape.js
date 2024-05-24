@@ -98,11 +98,10 @@ async function scrapeCatalog(catalogUrl) {
   await scrapeCatalog(baseUrls.fridge);
   await scrapeCatalog(baseUrls.dishwasher);
 
-  // Define the path to the backend directory
-  const backendDir = path.join(__dirname, 'backend');
+  // Define the correct path to the backend directory
+  const filePath = path.join(__dirname, 'scrapedPartsData.json');
 
   // Write all scraped data to a single JSON file in the backend directory
-  const filePath = path.join(backendDir, 'scrapedPartsData.json');
   fs.writeFileSync(filePath, JSON.stringify(allPartsData, null, 2));
   console.log(`All part details saved to: ${filePath}`);
 })();
