@@ -5,8 +5,8 @@ const path = require('path');
 
 // Define the base URLs for the fridge and dishwasher product catalogs
 const baseUrls = {
-  fridge: 'https://www.partselect.com/Fridge-Parts.htm',
-  dishwasher: 'https://www.partselect.com/Dishwasher-Parts.htm'
+  fridge: '<https://www.partselect.com/Fridge-Parts.htm>',
+  dishwasher: '<https://www.partselect.com/Dishwasher-Parts.htm>'
 };
 
 // Object to store all scraped part details
@@ -18,7 +18,7 @@ async function scrapePartDetails(partUrl) {
     console.log(`Scraping part details from: ${partUrl}`);
     // Make a GET request to fetch the HTML content of the part's page
     const response = await axios.get(partUrl);
-    
+
     // Load the HTML content into cheerio for parsing
     const html = response.data;
     const $ = cheerio.load(html);
@@ -98,8 +98,11 @@ async function scrapeCatalog(catalogUrl) {
   await scrapeCatalog(baseUrls.fridge);
   await scrapeCatalog(baseUrls.dishwasher);
 
-  // Write all scraped data to a single JSON file
-  const filePath = path.join(__dirname, 'scrapedPartsData.json');
+  // Define the path to the backend directory
+  const backendDir = path.join(__dirname, 'backend');
+
+  // Write all scraped data to a single JSON file in the backend directory
+  const filePath = path.join(backendDir, 'scrapedPartsData.json');
   fs.writeFileSync(filePath, JSON.stringify(allPartsData, null, 2));
   console.log(`All part details saved to: ${filePath}`);
 })();
