@@ -5,7 +5,7 @@ const path = require('path');
 
 // Define the base URLs for the fridge and dishwasher product catalogs
 const baseUrls = {
-  fridge: '<https://www.partselect.com/Fridge-Parts.htm>',
+  fridge: '<https://www.partselect.com/Refrigerator-Parts.htm>',
   dishwasher: '<https://www.partselect.com/Dishwasher-Parts.htm>'
 };
 
